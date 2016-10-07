@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "electron-settings": "^2.2.1",
-    "leapjs": "^0.6.4"
+    "leapjs": "https://github.com/g-sam/leapjs/tarball/patched",
+    "robot-js": "^1.0.2"
   }
 }

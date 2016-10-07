@@ -1,6 +1,7 @@
 const Leap = require('leapjs');
 const ipc = require('electron').ipcRenderer;
 const settings = require('electron-settings');
+const robot = require('./robot.js')
 
 /* Three sets of coordinates: leap-space, display-space, canvas-space */
 
@@ -17,6 +18,7 @@ let mult, centres, r, norms;
 let xDim, yDim;
 
 settings.get().then((params) => {
+  robot.init(params.keymap)
   gap = params.gap;
   crosshairSize = params.crosshairSize;
   segmentAngle = pi2 / params.noSegments;
@@ -150,10 +152,6 @@ function drawCrosshairs(frame){
   }
 }
 
-function type(history){
-  console.log(history)
-}
-
 function launch(){
   const controller = Leap.loop({
     background: true,
@@ -167,7 +165,7 @@ function launch(){
         if (zone === null){
           history[side] = [null];
         } else if (zone === 0) {
-          type(history[side]);
+          robot.type(history[side], side);
           history[side] = [0];
         } else if (history[side][0] === 0) {
           history[side].push(zone);
