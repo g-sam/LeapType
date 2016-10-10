@@ -4,30 +4,27 @@
   "description": "Type with Leap Motion",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "node_modules/.bin/electron ."
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "type": "git"
   },
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
+    "Leapmotion",
+    "gesture",
+    "type",
+    "keyboard"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "author": "Sam Galson",
+  "license": "",
+  "homepage": "",
   "devDependencies": {
-    "electron": "^1.3.4"
+    "electron-prebuilt": "1.2.8",
+    "electron-rebuild": "^1.2.1"
   },
   "dependencies": {
     "electron-settings": "^2.2.1",
     "leapjs": "https://github.com/g-sam/leapjs/tarball/patched",
-    "robot-js": "^1.0.2"
+    "robotjs": "^0.4.4"
   }
 }

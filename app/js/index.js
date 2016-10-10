@@ -18,7 +18,7 @@ let mult, centres, r, norms;
 let xDim, yDim;
 
 settings.get().then((params) => {
-  robot.init(params.keymap)
+  robot.init(params.keymap);
   gap = params.gap;
   crosshairSize = params.crosshairSize;
   segmentAngle = pi2 / params.noSegments;
@@ -62,7 +62,6 @@ function resizeCanvas(){
   r = xCanvas(homeRadius);
   norms = xCanvas(normals);
   refresh()
-
 }
 
 function drawNormal(th, side){
@@ -89,20 +88,18 @@ function refresh(){
 }
 
 function fillZone(zone, side) {
+  if (zone === null) return 
   ctx.fillStyle = fillStyle;
-  console.log('fillin', zone, 'on side', side)
+  ctx.beginPath();
   if(zone === 0) {
-    ctx.beginPath();
     ctx.arc(...centres[side], r, 0, pi2); 
-    ctx.fill();
   } else {
     const th1 = ((zone - 1) / 5) * pi2;
     const th2 = (zone / 5) * pi2;
-    ctx.beginPath();
     ctx.arc(...centres[side], r, th1, th2, false); 
     ctx.arc(...centres[side], (r + norms), th2, th1, true); 
-    ctx.fill();
   } 
+  ctx.fill();
 }
 
 function getZone(frame, side) {
@@ -118,7 +115,14 @@ function getZone(frame, side) {
 function getPalmPos(frame, side){
   const box = frame.interactionBox;
   const hands = frame.hands;
-  const xy = box.normalizePoint(hands[side].palmPosition);
+  const leftX = box.normalizePoint(hands[0].palmPosition);
+  const rightX = box.normalizePoint(hands[1].palmPosition);
+  let xy;
+  if (leftX <= rightX) xy = box.normalizePoint(hands[side].palmPosition);
+  else {
+    if (side === 0) xy = box.normalizePoint(hands[1].palmPosition);
+    else xy = box.normalizePoint(hands[0].palmPosition);
+  }
   return flipY(xy)
 }
 
@@ -160,7 +164,7 @@ function launch(){
     refresh();
     for (side = 0; side < 2; side++) {
       zone = getZone(frame, side);
-      if (zone !== null) fillZone(zone, side);
+      fillZone(zone, side);
       if(history[side][history[side].length - 1] !== zone) {
         if (zone === null){
           history[side] = [null];

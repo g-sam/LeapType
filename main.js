@@ -10,12 +10,13 @@ let win;
 
 function createWindow () {
   settingsPromise.then(params => {
-    console.log(params)
     win = new BrowserWindow({
       width: 500,
       height: 250,
       minWidth: 100,
       minHeight: 50,
+      //focusable: false,
+      alwaysOnTop: true,
     });
     win.loadURL(`file://${__dirname}/app/index.html`);
     win.setAspectRatio(2 / 1);
@@ -29,7 +30,7 @@ app.on('ready', createWindow)
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
 });
 
@@ -38,7 +39,3 @@ app.on('activate', function () {
     createWindow()
   }
 });
-
-process.on('uncaughtException', function (err) {
-  console.err(err);
-})

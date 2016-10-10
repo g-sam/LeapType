@@ -12,6 +12,8 @@ const params = {
   homeRadius: 0.075,
 };
 
+params.keymap = [null, null];
+
 params.keymap[0] = {
   1: 'a',
   2: 'r',
