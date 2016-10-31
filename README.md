@@ -1,6 +1,6 @@
 # LeapType
 
-Fingerless keyboard using LeapMotion sensor
+Fingerless typing for the RSI afflicted, using LeapMotion sensor.
 
 ## Concept
 
