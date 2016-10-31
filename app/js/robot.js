@@ -9,7 +9,7 @@ function type(history, side) {
   console.log(history)
   const string = keys[side][history.join('').slice(1)];
   console.log(string)
-  if (string) robot.typeString(string);
+  if (string) robot.keyTap(string);
 }
 
 function init(keymap){

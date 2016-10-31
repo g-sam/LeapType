@@ -3,8 +3,6 @@ const ipc = require('electron').ipcRenderer;
 const settings = require('electron-settings');
 const robot = require('./robot.js')
 
-/* Three sets of coordinates: leap-space, display-space, canvas-space */
-
 const pi2 = 2 * Math.PI;
 const c = document.getElementsByTagName("canvas")[0];
 const ctx = c.getContext("2d");
@@ -14,9 +12,10 @@ let zone = null;
 let normals, crosshairSize, gap; 
 let lineWidth, fillStyle, strokeStyle;
 let leftHome, rightHome, homeRadius, homes, segmentAngle; 
-let mult, centres, r, norms;
 let xDim, yDim;
+let mult, centres, r, norms; //scaled to canvas
 
+/* initialise */
 settings.get().then((params) => {
   robot.init(params.keymap);
   gap = params.gap;
@@ -39,22 +38,26 @@ settings.get().then((params) => {
   launch();
 });
 
-function flipY(array){
-  return [array[0], 1 - array[1]];
+/* transform leapmotion y coordinates to canvas y coordinates */ 
+function flipY(pos){
+  return [pos[0], 1 - pos[1], pos[2]];
 }
 
-function trim(xy){
+/* transform coordinates to exclude white space */ 
+function trim(xy) {
   const x = xy[0] - (1 - xDim) + gap / 2;
   const y = xy[1] - (1 - yDim) + gap / 2;
   return [x / xDim, y / xDim]
 }
 
+/* scale coordinates to canvas size */
 function xCanvas(val){
   mult = (c.width / xDim) < (c.height / yDim) ? (c.width / xDim) : (c.height / yDim);
   if (Array.isArray(val)) return trim(val).map(v => v * mult);
   else return val * mult 
 }
 
+/*scale parameters for drawing to canvas and redraw*/
 function resizeCanvas(){
   c.width = window.innerWidth;
   c.height = window.innerHeight;
@@ -71,6 +74,7 @@ function drawNormal(th, side){
   ctx.stroke()
 }
 
+/* redraw circles and normals */
 function refresh(){
   ctx.clearRect(0, 0, c.width, c.height)
   ctx.lineWidth = lineWidth;
@@ -89,11 +93,18 @@ function refresh(){
 
 function fillZone(zone, side) {
   if (zone === null) return 
-  ctx.fillStyle = fillStyle;
   ctx.beginPath();
   if(zone === 0) {
+    ctx.fillStyle = fillStyle;
+    ctx.arc(...centres[side], r, 0, pi2); 
+  } else if (zone === 'pull') {
+    ctx.fillStyle = '#228B22'; //green
+    ctx.arc(...centres[side], r, 0, pi2); 
+  } else if (zone === 'push') {
+    ctx.fillStyle = '#7f7fff'; //blue
     ctx.arc(...centres[side], r, 0, pi2); 
   } else {
+    ctx.fillStyle = fillStyle;
     const th1 = ((zone - 1) / 5) * pi2;
     const th2 = (zone / 5) * pi2;
     ctx.arc(...centres[side], r, th1, th2, false); 
@@ -102,9 +113,17 @@ function fillZone(zone, side) {
   ctx.fill();
 }
 
+function checkZ (pos) {
+  let radius = homeRadius * 6;
+  if (pos[2] > 0.5 + radius) return 'pull' 
+  if (pos[2] < 0.5 - radius) return 'push' 
+  return null
+}
+
 function getZone(frame, side) {
   if (!handsReady(frame)) return null;
   const pos = getPalmPos(frame, side);
+  if (checkZ(pos)) return checkZ(pos);
   const home = homes[side];
   const relPos = [pos[0] - home[0], pos[1] - home[1]]
   const radius = Math.sqrt(Math.pow(relPos[0], 2) + Math.pow(relPos[1], 2));
@@ -112,20 +131,22 @@ function getZone(frame, side) {
   return (radius < homeRadius) ? 0 : Math.ceil((th * 5) / pi2);
 }
 
+/* get position of palm, reversing crossed hands */
 function getPalmPos(frame, side){
   const box = frame.interactionBox;
   const hands = frame.hands;
   const leftX = box.normalizePoint(hands[0].palmPosition);
   const rightX = box.normalizePoint(hands[1].palmPosition);
-  let xy;
-  if (leftX <= rightX) xy = box.normalizePoint(hands[side].palmPosition);
+  let pos;
+  if (leftX <= rightX) pos = box.normalizePoint(hands[side].palmPosition);
   else {
-    if (side === 0) xy = box.normalizePoint(hands[1].palmPosition);
-    else xy = box.normalizePoint(hands[0].palmPosition);
+    if (side === 0) pos = box.normalizePoint(hands[1].palmPosition);
+    else pos = box.normalizePoint(hands[0].palmPosition);
   }
-  return flipY(xy)
+  return flipY(pos)
 }
 
+/* check if both hands are tracked */
 function handsReady(frame){
   if (!frame) return false;
   const box = frame.interactionBox;
@@ -156,6 +177,7 @@ function drawCrosshairs(frame){
   }
 }
 
+/* start leapmotion loop */
 function launch(){
   const controller = Leap.loop({
     background: true,

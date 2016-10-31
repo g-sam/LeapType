@@ -9,7 +9,7 @@ const params = {
   crosshairSize: 0.01,
   leftHome: [0.20, 0.3],
   rightHome: [0.8, 0.3],
-  homeRadius: 0.075,
+  homeRadius: 0.1,
 };
 
 params.keymap = [null, null];
@@ -35,6 +35,8 @@ params.keymap[0] = {
   345: '3',
   451: '4',
   512: '5',
+  push: ' ',
+  pull: 'tab'
 }
 
 params.keymap[1] = {
@@ -58,6 +60,8 @@ params.keymap[1] = {
   345: '8',
   451: '9',
   512: '0',
+  push: 'enter',
+  pull: 'backspace',
 }
 
 settings.defaults(params);
