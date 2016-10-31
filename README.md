@@ -6,7 +6,7 @@ Fingerless typing for the RSI afflicted, using LeapMotion sensor.
 
 This app allows you to visualise the position of your palms on a vertical 2D plane parallel to the LeapMotion sensor and type by making small circular motions with your hands. Two 'home' circles are defined, one for each hand, as well as (by default) six sectors radiating out from each home circle. Letters are typed by moving from 'home' to a sector and back. Further combinations are acheived by moving from a sector to an adjacent sector, or two adjacent sectors, before returning to home.
 
-The radius and separation of the home circles as well as the number of sectors are parametised. Some experimentation is necessary to determine the optimal parameters. 
+The radius and separation of the home circles as well as the number of sectors are parametrised. Some experimentation is necessary to determine the optimal parameters. 
 
 ## To run
 
